@@ -1,0 +1,41 @@
+{
+  "name": "dapp-example",
+  "license": "0BSD",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "doctor": "npx expo-doctor",
+    "prebuild": "npx expo prebuild",
+    "clean": "npx expo prebuild --clean",
+    "start": "npx expo start --dev-client",
+    "android": "npx expo run:android",
+    "android:build": "eas build --platform android --profile android-production",
+    "ios": "npx expo run:ios",
+    "ios:build": "eas build --platform ios --profile ios-production --auto-submit",
+    "web": "npx expo start --web",
+    "ld": "yarn && cd ios && pod install && cd .. && yarn run ios --port 8082"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "1.23.1",
+    "@react-native-community/netinfo": "11.4.1",
+    "@waxio/sdk-react-native": "./package/waxio-sdk-react-native-v0.2.7.tgz",
+    "expo": "^52.0.41",
+    "expo-linking": "~7.0.5",
+    "expo-router": "~4.0.19",
+    "expo-status-bar": "~2.0.1",
+    "react": "18.3.1",
+    "react-native": "0.76.7",
+    "react-native-get-random-values": "~1.8.0",
+    "react-native-linear-gradient": "^3.0.0-alpha.1",
+    "react-native-qrcode-svg": "^6.3.12",
+    "react-native-svg": "15.8.0",
+    "react-native-toast-message": "^2.2.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@types/react": "~18.3.12",
+    "aws-amplify": "^5.3.6",
+    "typescript": "^5.3.3"
+  },
+  "private": true
+}

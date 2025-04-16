@@ -1,0 +1,29 @@
+{
+    "build": {
+        "ios-production": {
+            "distribution": "store",
+            "channel": "production"
+        },
+        "android-production": {
+            "distribution": "store",
+            "android": {
+                "buildType": "apk",
+                "gradleCommand": ":app:assembleRelease"
+            }
+        }
+    },
+    "submit": {
+        "ios-production": {
+            "ios": {
+                "appleId": "ngoctam121191@gmail.com",
+                "ascAppId": "6743956146",
+                "appleTeamId": "BVZ4P3MN5J"
+            }
+        },
+        "android-production": {
+            "android": {
+                "track": "production"
+            }
+        }
+    }
+}

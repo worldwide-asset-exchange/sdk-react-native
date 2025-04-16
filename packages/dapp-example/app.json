@@ -1,0 +1,61 @@
+{
+  "expo": {
+    "name": "dapp-example",
+    "slug": "dapp-example",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "scheme": "dappexample",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "buildNumber": "8",
+      "supportsTablet": true,
+      "bundleIdentifier": "io.wax.dappexample",
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": [
+          "mycloudwallet",
+          "mycloudwallet"
+        ],
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "versionCode": 8,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "io.wax.dappexample",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "category": [
+            "DEFAULT",
+            "BROWSABLE"
+          ],
+          "data": {
+            "scheme": "mycloudwallet"
+          }
+        }
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "0834bcb5-de65-4f24-badf-6ca476b68cb7"
+      }
+    },
+    "plugins": [
+      "expo-router"
+    ]
+  }
+}
