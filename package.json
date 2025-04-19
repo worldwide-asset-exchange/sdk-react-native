@@ -1,5 +1,5 @@
 {
-  "name": "waxjs-mobile-sdk",
+  "name": "@waxio/waxjs-mobile-sdk",
   "version": "1.0.0",
   "description": "Wax Mobile SDK enables developers to easily connect their dapps with the WaxCloudWallet Mobile.",
   "main": "index.js",
