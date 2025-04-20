@@ -58,7 +58,12 @@ export class WaxDeeplinkSDK extends BaseWaxSDK {
         requisitionInfo.qrCodeContent = `${requisitionInfo.qrCodeContent}&nonce=${nonce}`;
         requisitionInfo.nonce = nonce;
       }
-      return requisitionInfo.qrCodeContent;
+      // remove schema from qrCodeContent
+      const qrCodeContentWithoutSchema = requisitionInfo.qrCodeContent.replace(
+        /&schema=[^&]+/,
+        ''
+      );
+      return qrCodeContentWithoutSchema;
     }
     return `${WAX_SCHEME_DEEPLINK}://request?code=${this._requisitionInfo?.code}&nonce=${nonce}&dapp=${this.metadata.origin}&schema=${this.metadata.scheme}&logourl=${this.metadata.icon}&origin=${this.metadata.origin}&description=${this.metadata.description}&antelope=antelope-1`;
   }
