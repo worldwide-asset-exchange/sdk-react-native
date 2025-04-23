@@ -3769,9 +3769,9 @@
     "@urql/core" "^5.1.1"
     wonka "^6.3.2"
 
-"@waxio/sdk-react-native@./package/waxio-sdk-react-native-v0.2.7.tgz":
-  version "0.2.7"
-  resolved "./package/waxio-sdk-react-native-v0.2.7.tgz#885a410aab874a3e20c8153b74f5a7bdff9e911a"
+"@waxio/sdk-react-native@./package/waxio-sdk-react-native-v0.2.10.tgz":
+  version "0.2.10"
+  resolved "./package/waxio-sdk-react-native-v0.2.10.tgz#43acd0f496d1dd3cced95d5b24a3dca7234f8bb1"
   dependencies:
     "@react-native-async-storage/async-storage" "^1.23.1"
     "@react-native-community/netinfo" "^11.3.2"
