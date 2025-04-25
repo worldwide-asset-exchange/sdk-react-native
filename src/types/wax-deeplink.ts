@@ -1,5 +1,4 @@
-import { IBaseWaxSDKParams } from '../base/base-sdk';
-import { NamedParams, Transaction } from './transaction';
+import { NamedParams, SignatureResponse, Transaction } from './transaction';
 
 export interface DappMetadata {
   name: string;
@@ -9,23 +8,40 @@ export interface DappMetadata {
   scheme: string;
 }
 
+export interface UserData {
+  account: string;
+  keys: string[];
+  isTemp?: boolean;
+  createData?: any;
+  avatarUrl?: string;
+  trustScore?: number;
+  isProofVerified?: any;
+  token?: string;
+}
+
 export interface WaxSDKContextState {
+  // Connection Status
+  isConnected: boolean;
   canDirectConnect: () => Promise<boolean>;
-  connect: (nonce: string) => Promise<void | LoginResponse | undefined>;
+  user?: UserData;
+  error?: string;
+
+  // Connection Methods
   directConnect: () => Promise<void>;
-  disconnect: () => Promise<boolean | undefined>;
-  user: LoginResponse | undefined;
-  isConnected: boolean | undefined;
+  connect: () => Promise<void>;
+
+  // Transaction Methods
+  directTransact: (actions: any, namedParams: Partial<NamedParams>) => Promise<any>;
+  transact: (actions: any, namedParams: Partial<NamedParams>) => Promise<any>;
+
+  // Disconnect Methods
+  disconnect : ()=> Promise<void>;
+
+  // Utility Methods
   getQRCode: (nonce: string) => Promise<string>;
-  error: string;
-  transact: (
-    actions: any,
-    namedParams: Partial<NamedParams>
-  ) => Promise<any> | undefined;
-  directTransact: (
-    actions: any,
-    namedParams: Partial<NamedParams>
-  ) => Promise<any> | undefined;
+
+  // Loading States
+  isLoading: boolean;
 }
 
 export interface RequisitionInfo {
@@ -63,23 +79,16 @@ export interface WaxDeeplinkOpts {
   autoConnect?: boolean;
 }
 
-export interface WaxDeeplinkSDKParams extends IBaseWaxSDKParams {
+export interface WaxDeeplinkSDKParams {
   readonly activationEndpoint: string;
   readonly relayEndpoint: string;
   readonly relayRegion: string;
   opts?: WaxDeeplinkOpts;
 
   readonly clientId: string;
-  // Optional property for getSingleUseToken
   readonly getSingleUseToken?: () => Promise<string>;
 }
 
 export interface WaxDeeplinkProviderProps extends WaxDeeplinkSDKParams {
-  readonly activationEndpoint: string;
-  readonly relayEndpoint: string;
-  readonly clientId: string;
-  readonly getSingleUseToken?: () => Promise<string>;
-  opts?: WaxDeeplinkOpts;
-  chain?: string;
   metadata: DappMetadata;
 }
