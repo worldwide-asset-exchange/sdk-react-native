@@ -35,7 +35,7 @@ export interface WaxSDKContextState {
   transact: (actions: any, namedParams: Partial<NamedParams>) => Promise<any>;
 
   // Disconnect Methods
-  disconnect : ()=> Promise<void>;
+  disconnect : ()=> Promise<any>;
 
   // Utility Methods
   getQRCode: (nonce: string) => Promise<string>;

@@ -414,6 +414,34 @@ export function WaxDeeplinkProvider({
     setError(undefined)
     setUser(undefined)
     setIsLoading(false)
+
+    // Validate SDK initialization
+    if (!sdkRef.current) {
+      const errorMsg = 'SDK not initialized';
+      throw new Error(errorMsg);
+    }
+
+    return new Promise<RequisitionInfo>((resolve, reject) => {
+      // Set up timeout for 60 seconds
+      const timeout = setTimeout(() => {
+        const errorMsg = 'Connection timeout after 60 seconds';
+        setError(errorMsg);
+        reject(new Error(errorMsg));
+      }, 600000);
+
+      // Connect via WebSocket with simplified error handling
+      sdkRef.current!.deactivate()
+        .then((result: any) => {
+          clearTimeout(timeout);
+          resolve(result);
+        })
+        .catch((error: Error) => {
+          clearTimeout(timeout);
+          const errorMsg = error.message || 'Unknown error during disconnect WebSocket connection';
+          setError(errorMsg);
+          reject(error); // Preserve original error object
+        });
+    });
   }
 
   // Prepare context value
