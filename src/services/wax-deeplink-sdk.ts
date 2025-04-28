@@ -46,7 +46,7 @@ export class WaxDeeplinkSDK {
   /**
    * Generates QR code content for wallet connection with proper parameter handling.
    * Retrieves requisition info if needed and appends the nonce to create a secure connection request.
-   * 
+   *
    * @param nonce - A unique string to prevent replay attacks
    * @returns A Promise resolving to a properly formatted QR code content string
    */
@@ -91,7 +91,7 @@ export class WaxDeeplinkSDK {
 
   /**
    * Creates a fallback QR code content string when requisition info is unavailable.
-   * 
+   *
    * @param nonce - A unique string to prevent replay attacks
    * @returns A properly formatted QR code content string
    * @private
@@ -115,7 +115,7 @@ export class WaxDeeplinkSDK {
   /**
    * Deactivates the current dApp connection with the wallet.
    * Sends a request to the deactivation endpoint and resets connection state.
-   * 
+   *
    * @returns A Promise resolving to true if deactivation was successful, false otherwise
    */
   public async deactivate(): Promise<boolean> {
@@ -125,13 +125,16 @@ export class WaxDeeplinkSDK {
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seconds timeout
 
       // Make deactivation request
-      const response = await fetch(`${this._activationEndpoint}/dapp/deactivate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        signal: controller.signal
-      });
+      const response = await fetch(
+        `${this._activationEndpoint}/dapp/deactivate`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          signal: controller.signal,
+        }
+      );
 
       clearTimeout(timeoutId);
 
@@ -160,7 +163,7 @@ export class WaxDeeplinkSDK {
   /**
    * Signs a transaction by sending it through the connected wallet.
    * This function publishes the transaction request to a channel and waits for user approval.
-   * 
+   *
    * @param actions - Array of actions to be executed in the transaction
    * @param namedParams - Named parameters for the transaction
    * @param user - User authentication info containing token and account
@@ -192,13 +195,16 @@ export class WaxDeeplinkSDK {
       namedParams: namedParams || {},
       dapp: this._metadata.origin || '',
       schema: this._metadata.scheme || '',
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
-    console.log(`[signTransaction] Publishing transaction request ${txInfo.id}`, {
-      channel: channelName,
-      actionCount: actions
-    });
+    console.log(
+      `[signTransaction] Publishing transaction request ${txInfo.id}`,
+      {
+        channel: channelName,
+        actionCount: actions,
+      }
+    );
 
     try {
       // Publish transaction to the channel
@@ -241,7 +247,9 @@ export class WaxDeeplinkSDK {
       try {
         // Set up timeout for transaction
         timeoutId = setTimeout(() => {
-          console.warn(`[signTransaction] Transaction ${txInfo.id} timed out after 3 minutes`);
+          console.warn(
+            `[signTransaction] Transaction ${txInfo.id} timed out after 3 minutes`
+          );
           cleanup();
           reject(new Error(ErrorMessages.Transaction_Timeout));
         }, 180000); // 3 minutes in milliseconds
@@ -272,23 +280,28 @@ export class WaxDeeplinkSDK {
         );
 
         // Subscribe to the channel
-        subscription = API.graphql<GraphQLSubscription<Subscribe2channelSubscription>>(
-          graphqlOption
-        ).subscribe({
+        subscription = API.graphql<
+          GraphQLSubscription<Subscribe2channelSubscription>
+        >(graphqlOption).subscribe({
           next: ({ value }) => {
             try {
               if (!value.data?.subscribe2channel?.data) {
                 return;
               }
 
-              const txRes: Transaction = JSON.parse(value.data.subscribe2channel.data);
+              const txRes: Transaction = JSON.parse(
+                value.data.subscribe2channel.data
+              );
 
               // Ignore messages for other transactions
               if (txRes.id !== txInfo.id) {
                 return;
               }
 
-              console.log(`[signTransaction] Received response for transaction ${txInfo.id}:`, txRes.type);
+              console.log(
+                `[signTransaction] Received response for transaction ${txInfo.id}:`,
+                txRes.type
+              );
 
               switch (txRes.type) {
                 case TransactionType.REQUESTING:
@@ -313,17 +326,27 @@ export class WaxDeeplinkSDK {
                   break;
 
                 case TransactionType.ERROR:
-                  console.error('[signTransaction] Transaction error:', txRes.result);
+                  console.error(
+                    '[signTransaction] Transaction error:',
+                    txRes.result
+                  );
                   cleanup();
-                  reject(new Error(txRes.result || ErrorMessages.Transaction_Error));
+                  reject(
+                    new Error(txRes.result || ErrorMessages.Transaction_Error)
+                  );
                   break;
 
                 default:
-                  console.warn(`[signTransaction] Unknown transaction status: ${txRes.type}`);
+                  console.warn(
+                    `[signTransaction] Unknown transaction status: ${txRes.type}`
+                  );
                   break;
               }
             } catch (error) {
-              console.error('[signTransaction] Error processing subscription message:', error);
+              console.error(
+                '[signTransaction] Error processing subscription message:',
+                error
+              );
             }
           },
           error: (error) => {
@@ -334,13 +357,14 @@ export class WaxDeeplinkSDK {
           complete: () => {
             console.log('[signTransaction] Subscription completed');
             cleanup();
-          }
+          },
         });
-
       } catch (error: any) {
         console.error('[signTransaction] Setup error:', error);
         cleanup();
-        reject(new Error(error.message || ErrorMessages.Transaction_SetupError));
+        reject(
+          new Error(error.message || ErrorMessages.Transaction_SetupError)
+        );
       }
     });
   }
@@ -348,7 +372,7 @@ export class WaxDeeplinkSDK {
   /**
    * Fetches requisition information from the activation endpoint.
    * This information is needed to generate QR code content for wallet connection.
-   * 
+   *
    * @returns A Promise resolving to RequisitionInfo object or undefined if an error occurs
    */
   private async _getRequisitionInfo(): Promise<RequisitionInfo | undefined> {
@@ -384,7 +408,7 @@ export class WaxDeeplinkSDK {
           'X-dapp-sdk-client-id': this._clientId,
         },
         body,
-        signal: controller.signal
+        signal: controller.signal,
       });
 
       clearTimeout(timeoutId);
@@ -392,7 +416,11 @@ export class WaxDeeplinkSDK {
       // Handle response errors
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        console.error('Requisition info fetch failed:', response.status, errorData);
+        console.error(
+          'Requisition info fetch failed:',
+          response.status,
+          errorData
+        );
         return undefined;
       }
 
@@ -417,7 +445,7 @@ export class WaxDeeplinkSDK {
    * - User is connected (success)
    * - Connection expired (timeout)
    * - An error occurs
-   * 
+   *
    * @returns A Promise resolving to LoginResponse when activated successfully
    * @throws Error if activation fails, times out, or requisition info is missing
    */
@@ -463,7 +491,7 @@ export class WaxDeeplinkSDK {
               body: JSON.stringify({
                 code: requisitionInfo.code,
               }),
-              signal: controller.signal
+              signal: controller.signal,
             }
           );
 
@@ -490,8 +518,10 @@ export class WaxDeeplinkSDK {
 
           // Handle error status codes
           const errorData = await response.json().catch(() => ({}));
-          console.warn(`[checkActivated] Error response: ${response.status}`, errorData);
-
+          console.warn(
+            `[checkActivated] Error response: ${response.status}`,
+            errorData
+          );
         } catch (error) {
           // Handle network errors without stopping the polling
           console.error('[checkActivated] Poll error:', error);
@@ -510,7 +540,7 @@ export class WaxDeeplinkSDK {
   /**
    * Initiates a direct connection to the wallet app using a deep link.
    * This method attempts to open the wallet application with connection parameters.
-   * 
+   *
    * @returns A Promise resolving when the wallet app is successfully opened
    * @throws Error if the wallet app cannot be opened or parameters are invalid
    */
@@ -568,7 +598,7 @@ export class WaxDeeplinkSDK {
 
   /**
    * Sends a transaction directly to the wallet app using a deep link.
-   * 
+   *
    * @param actions - Array of actions to be executed in the transaction
    * @param namedParams - Named parameters for the transaction
    * @returns A Promise resolving when the transaction has been sent to the wallet
@@ -587,15 +617,21 @@ export class WaxDeeplinkSDK {
       // Encode transaction data safely
       let encodedTransactions: string;
       try {
-        const str = JSON.stringify(actions)
+        const str = JSON.stringify(actions);
         const bytes = new TextEncoder().encode(str);
         const binString = Array.from(bytes)
-        .map(byte => String.fromCharCode(byte))
-        .join('');
+          .map((byte) => String.fromCharCode(byte))
+          .join('');
         encodedTransactions = btoa(binString);
-        encodedTransactions = encodedTransactions.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        encodedTransactions = encodedTransactions
+          .replace(/\+/g, '-')
+          .replace(/\//g, '_')
+          .replace(/[=]/g, '');
       } catch (error) {
-        console.error('[directTransact] Failed to encode transaction data:', error);
+        console.error(
+          '[directTransact] Failed to encode transaction data:',
+          error
+        );
         throw new Error(ErrorMessages.Transaction_EncodingError);
       }
 
@@ -634,7 +670,6 @@ export class WaxDeeplinkSDK {
       // Open wallet with transaction
       console.log('[directTransact] Open wallet with link: ', link);
       await Linking.openURL(link);
-
     } catch (error) {
       console.error('[directTransact] Error:', error);
       throw new Error(

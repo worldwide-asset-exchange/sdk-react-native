@@ -7,11 +7,7 @@ import type {
   WaxDeeplinkProviderProps,
   WaxSDKContextState,
 } from '../types';
-import {
-  createContext,
-  PropsWithChildren,
-  useContext,
-} from 'react';
+import { createContext, PropsWithChildren, useContext } from 'react';
 import { Linking } from 'react-native';
 import 'react-native-get-random-values';
 import { WAX_SCHEME_DEEPLINK } from '@/constants/urls';
@@ -21,12 +17,24 @@ export const WaxDeeplinkContext = createContext<WaxSDKContextState>({
   canDirectConnect: async () => false,
 
   // Default methods that will be overridden by actual implementation
-  directConnect: async () => { throw new Error('WaxDeeplinkProvider not initialized'); },
-  connect: async () => { throw new Error('WaxDeeplinkProvider not initialized'); },
-  directTransact: async () => { throw new Error('WaxDeeplinkProvider not initialized'); },
-  transact: async () => { throw new Error('WaxDeeplinkProvider not initialized'); },
-  getQRCode: async () => { throw new Error('WaxDeeplinkProvider not initialized'); },
-  disconnect : async () => { throw new Error('WaxDeeplinkProvider not initialized'); },
+  directConnect: async () => {
+    throw new Error('WaxDeeplinkProvider not initialized');
+  },
+  connect: async () => {
+    throw new Error('WaxDeeplinkProvider not initialized');
+  },
+  directTransact: async () => {
+    throw new Error('WaxDeeplinkProvider not initialized');
+  },
+  transact: async () => {
+    throw new Error('WaxDeeplinkProvider not initialized');
+  },
+  getQRCode: async () => {
+    throw new Error('WaxDeeplinkProvider not initialized');
+  },
+  disconnect: async () => {
+    throw new Error('WaxDeeplinkProvider not initialized');
+  },
   isLoading: false,
 });
 
@@ -62,12 +70,11 @@ export function WaxDeeplinkProvider({
       // This would be implemented with actual event listeners in production
       // Example: Linking.removeEventListener('url', handleDeepLinkGlobal);
     };
-  }, []);
+  }, [props]);
 
   // Set up global deeplink listeners
   const setupDeeplinkListeners = () => {
     // Example: Linking.addEventListener('url', handleDeepLinkGlobal);
-
     // This is where we'd handle deeplinks that come in when the app is already running
     // or when it's launched via a deeplink
   };
@@ -136,9 +143,10 @@ export function WaxDeeplinkProvider({
           // Handle parsing errors with specific error messages
           clearTimeout(timeout);
           cleanup();
-          const errorMsg = error instanceof Error
-            ? error.message
-            : 'Failed to process deeplink response';
+          const errorMsg =
+            error instanceof Error
+              ? error.message
+              : 'Failed to process deeplink response';
           setError(errorMsg);
           reject(new Error(errorMsg));
         }
@@ -151,14 +159,15 @@ export function WaxDeeplinkProvider({
       sdkRef.current!.directConnect().catch((error: Error) => {
         clearTimeout(timeout);
         cleanup();
-        const errorMsg = error.message || 'Failed to initiate deeplink connection';
+        const errorMsg =
+          error.message || 'Failed to initiate deeplink connection';
         setError(errorMsg);
         reject(error); // Preserve original error object
       });
     });
   };
 
-  // Get QR code method 
+  // Get QR code method
   const handleGetQRCode = async (nonce: string): Promise<string> => {
     // Validate SDK initialization
     if (!sdkRef.current) {
@@ -194,7 +203,8 @@ export function WaxDeeplinkProvider({
       }, 30000);
 
       // Request QR code from SDK with simplified error handling
-      sdkRef.current!.getQRCode(nonce)
+      sdkRef
+        .current!.getQRCode(nonce)
         .then((qrCodeUrl: string) => {
           clearTimeout(timeout);
           cleanup();
@@ -237,7 +247,8 @@ export function WaxDeeplinkProvider({
       }, 600000);
 
       // Connect via WebSocket with simplified error handling
-      sdkRef.current!.checkActivated()
+      sdkRef
+        .current!.checkActivated()
         .then((result: any) => {
           clearTimeout(timeout);
           // Update state
@@ -251,7 +262,8 @@ export function WaxDeeplinkProvider({
           setIsConnected(false);
           clearTimeout(timeout);
           cleanup();
-          const errorMsg = error.message || 'Unknown error during WebSocket connection';
+          const errorMsg =
+            error.message || 'Unknown error during WebSocket connection';
           setError(errorMsg);
           reject(error); // Preserve original error object
         });
@@ -259,7 +271,10 @@ export function WaxDeeplinkProvider({
   };
 
   // Sign Transaction via Deeplink
-  const handleSignTransactionViaDeeplink = async (actions: any, namedParams: Partial<NamedParams>): Promise<any> => {
+  const handleSignTransactionViaDeeplink = async (
+    actions: any,
+    namedParams: Partial<NamedParams>
+  ): Promise<any> => {
     // Validate SDK initialization
     if (!sdkRef.current) {
       const errorMsg = 'SDK not initialized';
@@ -299,7 +314,7 @@ export function WaxDeeplinkProvider({
 
       // Function to handle the deeplink response
       const handleDeeplinkResponse = (event: { url: string }) => {
-        console.log('event', event)
+        console.log('event', event);
         try {
           // Parse the URL to extract parameters
           const parsedUrl = new URL(event.url);
@@ -307,16 +322,16 @@ export function WaxDeeplinkProvider({
 
           const txid = params.get('txid');
           const errorParam = params.get('error');
-          console.log('txid:', txid)
-          console.log('errorParam:', errorParam)
+          console.log('txid:', txid);
+          console.log('errorParam:', errorParam);
           // Clean up and resolve
           clearTimeout(timeout);
           cleanup();
-          if(errorParam){
-            reject(new Error(errorParam))
+          if (errorParam) {
+            reject(new Error(errorParam));
           }
 
-          if(txid){
+          if (txid) {
             resolve({ result: { transaction_id: txid } });
           }
         } catch (error) {
@@ -333,18 +348,24 @@ export function WaxDeeplinkProvider({
       Linking.addEventListener('url', handleDeeplinkResponse);
 
       // Start the transaction signing process with simplified error handling
-      sdkRef.current!.directTransact(actions, namedParams).catch((error: Error) => {
-        clearTimeout(timeout);
-        cleanup();
-        const errorMsg = error.message || 'Failed to sign transaction deeplink connection';
-        setError(errorMsg);
-        reject(error); // Preserve original error object
-      });
+      sdkRef
+        .current!.directTransact(actions, namedParams)
+        .catch((error: Error) => {
+          clearTimeout(timeout);
+          cleanup();
+          const errorMsg =
+            error.message || 'Failed to sign transaction deeplink connection';
+          setError(errorMsg);
+          reject(error); // Preserve original error object
+        });
     });
   };
 
   // Sign Transaction via Websocket
-  const handleSignTransactionViaSocket = async (actions: any, namedParams: Partial<NamedParams>): Promise<any> => {
+  const handleSignTransactionViaSocket = async (
+    actions: any,
+    namedParams: Partial<NamedParams>
+  ): Promise<any> => {
     // Validate SDK initialization
     if (!sdkRef.current) {
       const errorMsg = 'SDK not initialized';
@@ -379,7 +400,8 @@ export function WaxDeeplinkProvider({
       }, 600000);
 
       // Connect via WebSocket with simplified error handling
-      sdkRef.current!.signTransaction(actions, namedParams, user)
+      sdkRef
+        .current!.signTransaction(actions, namedParams, user)
         .then((result: any) => {
           clearTimeout(timeout);
           cleanup();
@@ -388,7 +410,8 @@ export function WaxDeeplinkProvider({
         .catch((error: Error) => {
           clearTimeout(timeout);
           cleanup();
-          const errorMsg = error.message || 'Unknown error during WebSocket connection';
+          const errorMsg =
+            error.message || 'Unknown error during WebSocket connection';
           setError(errorMsg);
           reject(error); // Preserve original error object
         });
@@ -399,7 +422,9 @@ export function WaxDeeplinkProvider({
   const canDirectConnect = async (): Promise<boolean> => {
     try {
       // Check if the device can open the WAX deeplink
-      const canOpen = await Linking.canOpenURL(`${WAX_SCHEME_DEEPLINK}://connect`);
+      const canOpen = await Linking.canOpenURL(
+        `${WAX_SCHEME_DEEPLINK}://connect`
+      );
       return canOpen;
     } catch (error) {
       // Log the error but don't propagate it - just return false
@@ -410,10 +435,10 @@ export function WaxDeeplinkProvider({
 
   //Disconnect method
   const disconnect = async () => {
-    setIsConnected(false)
-    setError(undefined)
-    setUser(undefined)
-    setIsLoading(false)
+    setIsConnected(false);
+    setError(undefined);
+    setUser(undefined);
+    setIsLoading(false);
 
     // Validate SDK initialization
     if (!sdkRef.current) {
@@ -430,19 +455,22 @@ export function WaxDeeplinkProvider({
       }, 600000);
 
       // Connect via WebSocket with simplified error handling
-      sdkRef.current!.deactivate()
+      sdkRef
+        .current!.deactivate()
         .then((result: any) => {
           clearTimeout(timeout);
           resolve(result);
         })
         .catch((error: Error) => {
           clearTimeout(timeout);
-          const errorMsg = error.message || 'Unknown error during disconnect WebSocket connection';
+          const errorMsg =
+            error.message ||
+            'Unknown error during disconnect WebSocket connection';
           setError(errorMsg);
           reject(error); // Preserve original error object
         });
     });
-  }
+  };
 
   // Prepare context value
   const contextValue: WaxSDKContextState = {

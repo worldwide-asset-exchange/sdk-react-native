@@ -24,5 +24,5 @@ export enum ErrorMessages {
   Transaction_SubscriptionError = 'Subscription error during transaction',
   Transaction_SetupError = 'Failed to set up transaction request',
   Transaction_Unknown_Error = 'Unknown error during transaction',
-  Transaction_EncodingError = 'Failed to encode transaction data'
+  Transaction_EncodingError = 'Failed to encode transaction data',
 }
