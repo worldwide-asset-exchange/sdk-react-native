@@ -194,7 +194,6 @@ export class WaxDeeplinkSDK {
       actions,
       namedParams: namedParams || {},
       dapp: this._metadata.origin || '',
-      schema: this._metadata.scheme || '',
       timestamp: Date.now(),
     };
 
