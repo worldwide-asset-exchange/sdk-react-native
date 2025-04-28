@@ -5,6 +5,11 @@ export interface SignedTransaction {
   signatures: string[];
 }
 
+export interface SignatureResponse {
+  signatures: string[];
+  transaction: Transaction;
+}
+
 export interface Transaction {
   id: string;
   type: TransactionType;
@@ -13,6 +18,7 @@ export interface Transaction {
   dapp?: string;
   result?: any;
   schema?: string;
+  timestamp ?: number;
 }
 
 export interface NamedParams {
