@@ -1,9 +1,16 @@
-import { StyleSheet, Text, TouchableOpacity, View, ActivityIndicator, Clipboard } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ActivityIndicator,
+  Clipboard,
+} from 'react-native';
 
-import { useWaxSDK } from "@waxio/sdk-react-native";
-import React, { useState } from "react";
-import Toast from "react-native-toast-message";
-import QRCode from "react-native-qrcode-svg";
+import { useWaxSDK } from '@waxio/sdk-react-native';
+import React, { useState } from 'react';
+import Toast from 'react-native-toast-message';
+import QRCode from 'react-native-qrcode-svg';
 
 enum ConnectionType {
   DISCONNECTED = 'disconnected',
@@ -25,7 +32,6 @@ export const Example = () => {
     transact,
     directTransact,
     disconnect,
-    getQRCode,
   } = useWaxSDK();
 
   // State management for UI feedback
@@ -34,8 +40,12 @@ export const Example = () => {
   const [isSigning, setIsSigning] = useState<boolean>(false);
   const [showQRCode, setShowQRCode] = useState<boolean>(false);
   const [qrCode, setQrCode] = useState<string>('');
-  const [connectionType, setConnectionType] = useState<ConnectionType>(ConnectionType.DISCONNECTED);
-  const [connectionMode, setConnectionMode] = useState<ConnectionMode>(ConnectionMode.WS);
+  const [connectionType, setConnectionType] = useState<ConnectionType>(
+    ConnectionType.DISCONNECTED
+  );
+  const [connectionMode, setConnectionMode] = useState<ConnectionMode>(
+    ConnectionMode.WS
+  );
 
   const handleModeChange = (mode: ConnectionMode) => {
     setConnectionMode(mode);
@@ -46,9 +56,9 @@ export const Example = () => {
   const handleSignTransaction = async () => {
     if (!user?.account) {
       Toast.show({
-        type: "error",
-        text1: "Connection Required",
-        text2: "Please connect your wallet first",
+        type: 'error',
+        text1: 'Connection Required',
+        text2: 'Please connect your wallet first',
       });
       return;
     }
@@ -56,42 +66,42 @@ export const Example = () => {
     setIsSigning(true);
     const memo = Date.now();
     const exampleActions = {
-      account: "eosio.token",
-      name: "transfer",
+      account: 'eosio.token',
+      name: 'transfer',
       authorization: [
         {
           actor: user?.account,
-          permission: "active",
+          permission: 'active',
         },
       ],
       data: {
         from: user?.account,
-        to: "hoangngoctam",
-        quantity: "0.00000001 WAX",
+        to: 'hoangngoctam',
+        quantity: '0.00000001 WAX',
         memo: `${memo}. Transfer WAX`,
       },
     };
 
     try {
-      console.log("transact", exampleActions);
+      console.log('transact', exampleActions);
       const response = await transact(exampleActions, {
         blocksBehind: 3,
         expireSeconds: 30000,
       });
 
       Toast.show({
-        type: "success",
-        text1: "Transaction Successful",
+        type: 'success',
+        text1: 'Transaction Successful',
         text2: `ID: ${response?.result?.transaction_id.substring(0, 10)}...`,
       });
       return response;
     } catch (err: any) {
-      console.error(err)
+      console.error(err);
       setIsSigning(false);
       Toast.show({
-        type: "error",
-        text1: "Transaction Failed",
-        text2: `${err?.message || "Something went wrong"}`,
+        type: 'error',
+        text1: 'Transaction Failed',
+        text2: `${err?.message || 'Something went wrong'}`,
       });
     } finally {
       setIsSigning(false);
@@ -101,9 +111,9 @@ export const Example = () => {
   const handleDirectSignTransaction = async () => {
     if (!user?.account) {
       Toast.show({
-        type: "error",
-        text1: "Connection Required",
-        text2: "Please connect your wallet first",
+        type: 'error',
+        text1: 'Connection Required',
+        text2: 'Please connect your wallet first',
       });
       return;
     }
@@ -111,18 +121,18 @@ export const Example = () => {
     setIsSigning(true);
     const memo = Date.now();
     const exampleActions = {
-      account: "eosio.token",
-      name: "transfer",
+      account: 'eosio.token',
+      name: 'transfer',
       authorization: [
         {
           actor: user?.account,
-          permission: "active",
+          permission: 'active',
         },
       ],
       data: {
         from: user?.account,
-        to: "hoangngoctam",
-        quantity: "0.00000001 WAX",
+        to: 'hoangngoctam',
+        quantity: '0.00000001 WAX',
         memo: `${memo}. Transfer WAX`,
       },
     };
@@ -136,36 +146,34 @@ export const Example = () => {
         });
         setIsSigning(false);
         Toast.show({
-          type: "success",
-          text1: "Transaction Successful",
+          type: 'success',
+          text1: 'Transaction Successful',
           text2: `ID: ${response?.result?.transaction_id.substring(0, 10)}...`,
         });
       } catch (err: any) {
-        console.error(err)
+        console.error(err);
         Toast.show({
-          type: "error",
-          text1: "Transaction Failed",
-          text2: `${err?.message || "Something went wrong"}`,
+          type: 'error',
+          text1: 'Transaction Failed',
+          text2: `${err?.message || 'Something went wrong'}`,
         });
       } finally {
         setIsSigning(false);
       }
     } else {
       Toast.show({
-        type: "error",
-        text1: "Cannot direct connect",
-        text2: "Cloud Wallet app is not installed!",
+        type: 'error',
+        text1: 'Cannot direct connect',
+        text2: 'Cloud Wallet app is not installed!',
       });
     }
-  }
-
+  };
 
   const handleConnect = async () => {
     try {
       setIsConnecting(true);
-      const nonce = "nonce-example";
-      const qrCode = await getQRCode(nonce);
-      console.log("[handleConnect] qrCode:>>", qrCode);
+      const nonce = 'nonce-example';
+      console.log('[handleConnect] qrCode:>>', qrCode);
       setQrCode(qrCode);
       setShowQRCode(true);
 
@@ -174,9 +182,9 @@ export const Example = () => {
     } catch (err: any) {
       console.error(err);
       Toast.show({
-        type: "error",
-        text1: "Connection Failed",
-        text2: `${err?.message || "Something went wrong"}`,
+        type: 'error',
+        text1: 'Connection Failed',
+        text2: `${err?.message || 'Something went wrong'}`,
       });
     } finally {
       setIsConnecting(false);
@@ -187,30 +195,30 @@ export const Example = () => {
   const handleDirrectConnect = async () => {
     if (!(await canDirectConnect())) {
       Toast.show({
-        type: "error",
-        text1: "Cannot direct connect",
-        text2: "Cloud Wallet app is not installed!",
+        type: 'error',
+        text1: 'Cannot direct connect',
+        text2: 'Cloud Wallet app is not installed!',
       });
       return;
     }
-    console.log("canDirectConnect, connecting...");
+    console.log('canDirectConnect, connecting...');
     setIsConnecting(true);
     setShowQRCode(false);
     try {
-      await directConnect()
+      await directConnect();
       setConnectionType(ConnectionType.DIRECT_CONNECTED);
       setIsConnecting(false);
     } catch (err: any) {
       console.error(err);
       Toast.show({
-        type: "error",
-        text1: "Connection Failed",
-        text2: `${err?.message || "Something went wrong"}`,
+        type: 'error',
+        text1: 'Connection Failed',
+        text2: `${err?.message || 'Something went wrong'}`,
       });
     } finally {
       setIsConnecting(false);
     }
-  }
+  };
 
   const handleDisconnect = async () => {
     setIsDisconnecting(true);
@@ -219,15 +227,15 @@ export const Example = () => {
       setShowQRCode(false);
       setConnectionType(ConnectionType.DISCONNECTED);
       Toast.show({
-        type: "success",
-        text1: "Disconnected",
-        text2: "Wallet has been disconnected",
+        type: 'success',
+        text1: 'Disconnected',
+        text2: 'Wallet has been disconnected',
       });
     } catch (err: any) {
       Toast.show({
-        type: "error",
-        text1: "Disconnect Failed",
-        text2: `${err?.message || "Something went wrong"}`,
+        type: 'error',
+        text1: 'Disconnect Failed',
+        text2: `${err?.message || 'Something went wrong'}`,
       });
     } finally {
       setIsDisconnecting(false);
@@ -243,10 +251,10 @@ export const Example = () => {
             <TouchableOpacity
               style={styles.copyButton}
               onPress={() => {
-                Clipboard.setString(qrCode)
+                Clipboard.setString(qrCode);
                 Toast.show({
-                  type: "success",
-                  text1: "Copied",
+                  type: 'success',
+                  text1: 'Copied',
                 });
               }}
             >
@@ -254,10 +262,10 @@ export const Example = () => {
             </TouchableOpacity>
           </View>
         </View>
-      )
+      );
     }
     return null;
-  }
+  };
 
   return (
     <View style={styles.wrapper}>
@@ -265,7 +273,7 @@ export const Example = () => {
         <View style={styles.accountHeader}>
           <Text style={styles.accountLabel}>Account</Text>
           <Text style={styles.accountAddress}>
-            {user?.account || "Not connected"}
+            {user?.account || 'Not connected'}
           </Text>
         </View>
 
@@ -274,26 +282,37 @@ export const Example = () => {
             <TouchableOpacity
               style={[
                 styles.modeButton,
-                connectionMode === ConnectionMode.WS && styles.modeButtonActive
+                connectionMode === ConnectionMode.WS && styles.modeButtonActive,
               ]}
               onPress={() => handleModeChange(ConnectionMode.WS)}
             >
-              <Text style={[
-                styles.modeButtonText,
-                connectionMode === ConnectionMode.WS && styles.modeButtonTextActive
-              ]}>WebSocket</Text>
+              <Text
+                style={[
+                  styles.modeButtonText,
+                  connectionMode === ConnectionMode.WS &&
+                    styles.modeButtonTextActive,
+                ]}
+              >
+                WebSocket
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[
                 styles.modeButton,
-                connectionMode === ConnectionMode.DIRECT && styles.modeButtonActive
+                connectionMode === ConnectionMode.DIRECT &&
+                  styles.modeButtonActive,
               ]}
               onPress={() => handleModeChange(ConnectionMode.DIRECT)}
             >
-              <Text style={[
-                styles.modeButtonText,
-                connectionMode === ConnectionMode.DIRECT && styles.modeButtonTextActive
-              ]}>Direct</Text>
+              <Text
+                style={[
+                  styles.modeButtonText,
+                  connectionMode === ConnectionMode.DIRECT &&
+                    styles.modeButtonTextActive,
+                ]}
+              >
+                Direct
+              </Text>
             </TouchableOpacity>
           </View>
         )}
@@ -306,21 +325,26 @@ export const Example = () => {
               style={[
                 styles.primaryButton,
                 (isConnecting || !!user?.account) && styles.buttonDisabled,
-                user?.account && styles.buttonSuccess
+                user?.account && styles.buttonSuccess,
               ]}
-              onPress={connectionMode === ConnectionMode.WS ? handleConnect : handleDirrectConnect}
+              onPress={
+                connectionMode === ConnectionMode.WS
+                  ? handleConnect
+                  : handleDirrectConnect
+              }
               disabled={isConnecting || !!user?.account}
             >
               {isConnecting ? (
                 <ActivityIndicator size="small" color="#FFFFFF" />
               ) : (
-                <Text style={[
-                  styles.modeButtonText,
-                  styles.modeButtonTextActive
-                ]}>
+                <Text
+                  style={[styles.modeButtonText, styles.modeButtonTextActive]}
+                >
                   {connectionMode === ConnectionMode.WS
-                    ? (showQRCode ? "Connecting..." : "Generate QR Code")
-                    : "Connect"}
+                    ? showQRCode
+                      ? 'Connecting...'
+                      : 'Generate QR Code'
+                    : 'Connect'}
                 </Text>
               )}
             </TouchableOpacity>
@@ -331,16 +355,22 @@ export const Example = () => {
               style={[
                 styles.secondaryButton,
                 isSigning && styles.buttonDisabled,
-                !user?.account && styles.buttonDisabled
+                !user?.account && styles.buttonDisabled,
               ]}
-              onPress={connectionType === ConnectionType.DIRECT_CONNECTED ? handleDirectSignTransaction : handleSignTransaction}
+              onPress={
+                connectionType === ConnectionType.DIRECT_CONNECTED
+                  ? handleDirectSignTransaction
+                  : handleSignTransaction
+              }
               disabled={isSigning || !user?.account}
             >
               {isSigning ? (
                 <ActivityIndicator size="small" color="#CDAAEE" />
               ) : (
                 <Text style={styles.buttonText}>
-                  {connectionType === ConnectionType.DIRECT_CONNECTED ? "Direct Sign" : "Sign"}
+                  {connectionType === ConnectionType.DIRECT_CONNECTED
+                    ? 'Direct Sign'
+                    : 'Sign'}
                 </Text>
               )}
             </TouchableOpacity>
@@ -350,7 +380,10 @@ export const Example = () => {
 
       {user?.account && (
         <TouchableOpacity
-          style={[styles.disconnectButton, isDisconnecting && styles.buttonDisabled]}
+          style={[
+            styles.disconnectButton,
+            isDisconnecting && styles.buttonDisabled,
+          ]}
           onPress={handleDisconnect}
           disabled={isDisconnecting}
         >
@@ -371,8 +404,8 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     flexDirection: 'column',
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     gap: 16,
     padding: 24,
   },
@@ -460,7 +493,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#8549B6'
+    backgroundColor: '#8549B6',
   },
   secondaryButton: {
     borderRadius: 12,
@@ -473,7 +506,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: '#B3AEDF'
+    borderColor: '#B3AEDF',
   },
   disconnectButton: {
     width: '100%',

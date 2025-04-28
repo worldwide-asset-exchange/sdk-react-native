@@ -58,19 +58,19 @@ export function WaxDeeplinkProvider({
     return response;
   }, [sdk]);
 
-  const connect = useCallback(
-    async (nonce?: string) => {
-      const response = await sdk?.activate();
-      setRefresh((e) => !e);
-      return response;
+  const connect = useCallback(async () => {
+    const response = await sdk?.activate();
+    setRefresh((e) => !e);
+    return response;
+  }, [sdk]);
+
+  const getQRCode = useCallback(
+    async (nonce: string) => {
+      const content = await sdk?.getQRcodeContent(nonce);
+      return content || '';
     },
     [sdk]
   );
-
-  const getQRCode = useCallback(async (nonce: string) => {
-    const content = await sdk?.getQRcodeContent(nonce);
-    return content || '';
-  }, [sdk]);
 
   const directConnect = useCallback(async () => {
     return new Promise<void>((resolve, reject) => {
@@ -83,7 +83,7 @@ export function WaxDeeplinkProvider({
         const account = extractURL(url, 'account', false);
         const error = decodeURI(extractURL(url, 'error', false));
         if (account) {
-          console.log("[dapp deeplink] account found", account);
+          console.log('[dapp deeplink] account found', account);
           sdk?.setUserData({
             account: account,
             keys: [],
@@ -118,45 +118,51 @@ export function WaxDeeplinkProvider({
     });
   }, [sdk]);
 
-  const directTransact = useCallback(async (actions: any[], namedParams: Partial<NamedParams>) => {
-    return new Promise<any>((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        reject(new Error('Transaction timeout after 60 seconds'));
-      }, 60000);
+  const directTransact = useCallback(
+    async (actions: any[], namedParams: Partial<NamedParams>) => {
+      return new Promise<any>((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error('Transaction timeout after 60 seconds'));
+        }, 60000);
 
-      const handleTransaction = (url: string) => {
-        setRefresh((e) => !e);
-        const txid = extractURL(url, 'txid', false);
-        const error = decodeURI(extractURL(url, 'error', false));
-        if (txid) {
-          console.log("[dapp deeplink] transaction approved with txid:", txid);
+        const handleTransaction = (url: string) => {
+          setRefresh((e) => !e);
+          const txid = extractURL(url, 'txid', false);
+          const error = decodeURI(extractURL(url, 'error', false));
+          if (txid) {
+            console.log(
+              '[dapp deeplink] transaction approved with txid:',
+              txid
+            );
+            clearTimeout(timeout);
+            resolve({ result: { transaction_id: txid } });
+          } else if (error) {
+            clearTimeout(timeout);
+            reject(new Error(error));
+          }
+        };
+
+        // Add temporary listener for this specific transaction
+        const subscription = Linking.addEventListener('url', (params: any) => {
+          handleTransaction(params.url);
+        });
+
+        // Start the transaction process
+        sdk?.directTransact(actions, namedParams).catch((error) => {
           clearTimeout(timeout);
-          resolve({ result: { transaction_id: txid } });
-        } else if (error) {
+          subscription.remove();
+          reject(error);
+        });
+
+        // Cleanup on promise resolution/rejection
+        return () => {
           clearTimeout(timeout);
-          reject(new Error(error));
-        }
-      };
-
-      // Add temporary listener for this specific transaction
-      const subscription = Linking.addEventListener('url', (params: any) => {
-        handleTransaction(params.url);
+          subscription.remove();
+        };
       });
-
-      // Start the transaction process
-      sdk?.directTransact(actions, namedParams).catch((error) => {
-        clearTimeout(timeout);
-        subscription.remove();
-        reject(error);
-      });
-
-      // Cleanup on promise resolution/rejection
-      return () => {
-        clearTimeout(timeout);
-        subscription.remove();
-      };
-    });
-  }, [sdk]);
+    },
+    [sdk]
+  );
 
   const user = useMemo(() => {
     return sdk?.getUserData();
@@ -192,7 +198,7 @@ export function WaxDeeplinkProvider({
       error,
       transact,
       canDirectConnect,
-      getQRCode
+      getQRCode,
     }),
     [
       connect,
@@ -213,7 +219,7 @@ export function WaxDeeplinkProvider({
       const _sdk = new WaxDeeplinkSDK(props);
       setSdk(_sdk);
 
-      console.log("[dapp deeplink] init");
+      console.log('[dapp deeplink] init');
       Linking.addEventListener('url', (params: any) => {
         const { url } = params;
         const err = extractURL(url, 'error');

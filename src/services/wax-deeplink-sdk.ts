@@ -1,10 +1,6 @@
 import { BaseWaxSDK } from '@/base';
 import { ErrorMessages, TransactionType } from '@/constants';
-import {
-  INSTALL_APP_DEEPLINK_ANDROID,
-  INSTALL_APP_DEEPLINK_IOS,
-  WAX_SCHEME_DEEPLINK,
-} from '@/constants/urls';
+import { WAX_SCHEME_DEEPLINK } from '@/constants/urls';
 import type {
   LoginResponse,
   RequisitionInfo,
@@ -12,7 +8,7 @@ import type {
   WaxDeeplinkSDKParams,
   Subscribe2channelSubscription,
 } from '../types';
-import { Linking, Platform } from 'react-native';
+import { Linking } from 'react-native';
 import { API, Amplify, graphqlOperation } from 'aws-amplify';
 import { GraphQLSubscription } from '@aws-amplify/api';
 import { v4 as uuidv4 } from 'uuid';
@@ -217,7 +213,6 @@ export class WaxDeeplinkSDK extends BaseWaxSDK {
         Promise.race([subscriptionPromise, timeoutPromise])
           .then(resolve)
           .catch(reject);
-
       } catch (error: any) {
         console.log('error', error.error?.errors);
         subscription?.unsubscribe();

@@ -1,5 +1,5 @@
 import { IBaseWaxSDKParams } from '../base/base-sdk';
-import { NamedParams, Transaction } from './transaction';
+import { NamedParams } from './transaction';
 
 export interface DappMetadata {
   name: string;
