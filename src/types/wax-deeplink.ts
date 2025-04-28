@@ -1,4 +1,4 @@
-import { NamedParams, SignatureResponse, Transaction } from './transaction';
+import { NamedParams } from './transaction';
 
 export interface DappMetadata {
   name: string;
@@ -31,11 +31,14 @@ export interface WaxSDKContextState {
   connect: () => Promise<void>;
 
   // Transaction Methods
-  directTransact: (actions: any, namedParams: Partial<NamedParams>) => Promise<any>;
+  directTransact: (
+    actions: any,
+    namedParams: Partial<NamedParams>
+  ) => Promise<any>;
   transact: (actions: any, namedParams: Partial<NamedParams>) => Promise<any>;
 
   // Disconnect Methods
-  disconnect : ()=> Promise<any>;
+  disconnect: () => Promise<any>;
 
   // Utility Methods
   getQRCode: (nonce: string) => Promise<string>;

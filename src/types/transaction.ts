@@ -18,7 +18,7 @@ export interface Transaction {
   dapp?: string;
   result?: any;
   schema?: string;
-  timestamp ?: number;
+  timestamp?: number;
 }
 
 export interface NamedParams {
